@@ -1,0 +1,90 @@
+.sidePan-Uname{
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  /*padding-top: 20px;*/
+}
+
+div[class*="col"] {
+  background: #fff;
+  text-align: center;
+  color: #000;
+  font-size: 12px;
+}
+
+.hm_catBtns {
+max-width: 65%;
+}
+
+.ds_hm_catBtns {
+  display: block;
+  margin: 0 auto;
+  padding: 70px 0;
+  max-width: 65%;
+}
+
+@font-face {
+   font-family: geneva;
+   src: url(Geneva.ttf);
+}
+
+@font-face {
+   font-family: Lora;
+   src: url(Lora-Regular.ttf);
+}
+
+.app_text{
+  font-family: geneva;
+}
+
+.pro_pic{
+  display: block;
+   margin-left: auto;
+   margin-right: auto;
+   width: 50%;
+}
+
+.bottom_bar_text{
+  font-family: geneva;
+  font-size: 25px;
+}
+
+.image-upload > input{
+    display: none;
+}
+
+.grad1{
+  background:red;
+  background: linear-gradient(to right, red ,rgb(255,140,0))
+}
+.white{
+    color:white;
+}
+
+.panel_paddin{
+    padding-top: 50px;
+}
+
+.mySlides {
+    display:none;
+}
+
+.angle{
+  width: 20px;
+  height: 20px;
+    background: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: -9px;
+  top: 17px;
+  z-index: 100;
+  overflow: hidden;
+  transform: rotate(45deg);
+  border-top: 40px solid transparent;
+  border-bottom: 40px solid transparent;
+  border-left: 40px solid #fff;
+}
+
+.noHeight{
+  height: 0px;
+  visibility: hidden;
+}
