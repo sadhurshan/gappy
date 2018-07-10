@@ -1,0 +1,279 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/framework7.css">
+    <link rel="stylesheet" href="css/my-app.css">
+    <link rel="stylesheet" href="css/w3.css">
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js\jquery.min.js"></script>
+    <script type="text/javascript" src="js\index.js"></script>
+    <style>
+    .itemClr{
+      color:  #663399;
+    }
+    </style>
+
+ <script type="text/javascript">
+    var db;
+    var shortName = 'WebSqlDB';
+    var version = '1.0';
+    var displayName = 'WebSqlDB';
+    var maxSize = 65535;
+
+
+    function errorHandler(transaction, error) {
+      alert('Error: ' + error.message + ' code: ' + error.code);
+
+    }
+
+    function successCallBack() {
+      alert("DEBUGGING: success");
+
+    }
+
+    function nullHandler(){};
+
+    function onBodyLoad(){
+      //alert("DEBUGGING: we are in the onBodyLoad() function");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db = openDatabase(shortName, version, displayName,maxSize);
+
+      db.transaction(function(tx){
+
+        tx.executeSql( 'CREATE TABLE IF NOT EXISTS items(Id INTEGER NOT NULL PRIMARY KEY, item1 INTEGER NOT NULL, item2 INTEGER NOT NULL,item3 INTEGER NOT NULL)',
+        [],nullHandler,errorHandler);
+      },errorHandler,successCallBack);
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT * FROM items WHERE Id=1', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+            var row = result.rows.item(0);
+            if(row.item1 == 0){
+              $("#item1").addClass("itemClr");
+
+          }
+          if(row.item2 == 0){
+            $("#item2").addClass("itemClr");
+
+          }
+          if(row.item3 == 0){
+            $("#item3").addClass("itemClr");
+          }
+        }
+      },errorHandler);
+    },errorHandler,nullHandler); }
+
+    function ListDBValues() {
+      alert('function Loadded');
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      $('#lbUsers').html('');
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT * FROM items;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+            alert('Data in table');
+            for (var i = 0; i < result.rows.length; i++) {
+              var row = result.rows.item(i);
+              $('#lbUsers').append('<br>' + row.Id + '. ' +row.item1+ ' ' + row.item2+ ' ' + row.item3);
+            }
+          }else {
+            alert('no data in table');
+          }
+        },errorHandler);
+      },errorHandler,nullHandler);
+
+      return;
+    }
+
+    function AddValueToDB1() {
+      $("#item1").addClass("itemClr");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item1= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item1 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+            var row = result.rows.item(0);
+              if(row.item1 == 0){
+                $("#item1").addClass("itemClr");
+              }
+            }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+      }
+
+    function AddValueToDB2() {
+      $("#item2").addClass("itemClr");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item2= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item2 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item2 == 0){
+                $("#item2").addClass("itemClr");
+              }
+            }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+      }
+
+    function AddValueToDB3() {
+      $("#item3").addClass("itemClr");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item3= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item3 == 0){
+                $("#item3").addClass("itemClr");
+              }
+            }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+
+      }
+
+    function Clear() {
+      $("#item1").removeClass("itemClr");
+      $("#item2").removeClass("itemClr");
+      $("#item3").removeClass("itemClr");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item1= ?,item2= ?,item3= ? WHERE Id=1',[1,2,3],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item1 == 0){
+                $("#item1").addClass("itemClr");
+              }
+              else {
+                  $("#item1").removeClass("itemClr");
+                }
+                if(row.item2 == 0){
+                  $("#item2").addClass("itemClr");
+                }
+                else {
+                  $("#item2").removeClass("itemClr");
+                }
+                if(row.item3 == 0){
+                  $("#item3").addClass("itemClr");
+                }
+                else {
+                  $("#item3").removeClass("itemClr");
+                }
+
+              }
+            },errorHandler);
+          },errorHandler,nullHandler);
+          return false;
+        }
+        $(document).ready(function() { onBodyLoad();});
+
+  </script>
+
+  </head>
+  <body onload="onBodyLoad(); ListDBValues();">
+    <div class="app">
+    <div id="myApp">
+      <div class="panel panel-left panel-cover">
+        <div class="block">
+        </div>
+      </div>
+    <div class="views">
+      <div class="view view-main">
+        <div class="page" data-name="happyMe">
+          <!--<div class="navbar">
+            <div class="navbar-inner">
+              <div class="padding-left">HappyME:)</div>
+            </div>
+          </div>-->
+          <div class="page-content">
+            <div style="padding-top:60px;">
+          <div class="col-100" style="overflow: auto;">
+            <span id="lbUsers"></span>
+              <div style="width:100%; text-align:center;"  id="item1"><i class="material-icons" style="font-size:150px;" onclick="AddValueToDB1()">&#xe16b;</i></div>
+          </div>
+            <div class="col-100">
+              <div style="width:100%; text-align:center;" id="item2"><i class="material-icons" style="font-size:150px;" onclick="AddValueToDB2()">&#xe56c;</i></div>
+          </div>
+          <div class="col-100">
+              <div style="width:100%; text-align:center;" id="item3"><i class="material-icons" style="font-size:150px;" onclick="AddValueToDB3()">&#xeb48;</i></div>
+          </div>
+          </div>
+          <div class="text-align-center padding-top" onclick="Clear()">CLEAR</div>
+          <!--  <input id="txFirstName" type="text" placeholder="FirstName">
+            <input id="txLastName" type="text" placeholder="Last Name">
+            <input type="button" value="Add record" onClick="AddValueToDB()">
+            <input type="button" value="Refresh" onClick="ListDBValues()"> <br>
+            <br>
+            <span style="font-weight:bold;">Currently stored values:</span>
+            <span id="lbUsers"></span> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+    <script type="text/javascript" src="js/framework7.js"></script>
+    <script type="text/javascript" src="js/my-app.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+    <script>//$(document).ready(function() { ListDBValues(); });</script>
+  </body>
+</html>
