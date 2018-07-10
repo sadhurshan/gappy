@@ -219,12 +219,12 @@
           },errorHandler,nullHandler);
           return false;
         }
-        $(document).ready(function() { onBodyLoad(); ListDBValues();});
+        $(document).ready(function() { onBodyLoad();});
 
 </script>
 
   </head>
-  <body>
+  <body onload="ListDBValues();">
     <div class="app">
     <div id="myApp">
       <div class="panel panel-left panel-cover">
