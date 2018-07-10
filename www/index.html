@@ -5,7 +5,7 @@
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="stylesheet" href="css/material-icons.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/framework7.css">
     <link rel="stylesheet" href="css/my-app.css">
     <link rel="stylesheet" href="css/w3.css">
@@ -17,316 +17,215 @@
       color:  rebeccapurple;
     }
     </style>
-    <!-- main scripts used in this example -->
+
  <script type="text/javascript">
- var db;
- var shortName = 'WebSqlDB';
- var version = '1.0';
- var displayName = 'WebSqlDB';
- var maxSize = 65535;
+    var db;
+    var shortName = 'WebSqlDB';
+    var version = '1.0';
+    var displayName = 'WebSqlDB';
+    var maxSize = 65535;
 
 
-function errorHandler(transaction, error) {
-   alert('Error: ' + error.message + ' code: ' + error.code);
+    function errorHandler(transaction, error) {
+      alert('Error: ' + error.message + ' code: ' + error.code);
 
-}
+    }
 
-// this is called when a successful transaction happens
-function successCallBack() {
-   alert("DEBUGGING: success");
+    function successCallBack() {
+      alert("DEBUGGING: success");
 
-}
+    }
 
-function nullHandler(){};
+    function nullHandler(){};
 
-// called when the application loads
-function onBodyLoad(){
+    function onBodyLoad(){
+      //alert("DEBUGGING: we are in the onBodyLoad() function");
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
 
-// This alert is used to make sure the application is loaded correctly
-// you can comment this out once you have the application working
-alert("DEBUGGING: we are in the onBodyLoad() function");
+      db = openDatabase(shortName, version, displayName,maxSize);
 
- if (!window.openDatabase) {
-   // not all mobile devices support databases  if it does not, the
-//following alert will display
-   // indicating the device will not be albe to run this application
-   alert('Databases are not supported in this browser.');
-   return;
- }
+      db.transaction(function(tx){
 
-// this line tries to open the database base locally on the device
-// if it does not exist, it will create it and return a database
-//object stored in variable db
- db = openDatabase(shortName, version, displayName,maxSize);
+        tx.executeSql( 'CREATE TABLE IF NOT EXISTS items(Id INTEGER NOT NULL PRIMARY KEY, item1 INTEGER NOT NULL, item2 INTEGER NOT NULL,item3 INTEGER NOT NULL)',
+        [],nullHandler,errorHandler);
+      },errorHandler,successCallBack);
 
-// this line will try to create the table User in the database just
-//created/openned
- db.transaction(function(tx){
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT * FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+            var row = result.rows.item(0);
+            if(row.item1 == 0){
+              $("#item1").addClass("itemClr");
 
-  // you can uncomment this next line if you want the User table to be
-//empty each time the application runs
-  // tx.executeSql( 'DROP TABLE User',nullHandler,nullHandler);
-
-  // this line actually creates the table User if it does not exist
-//and sets up the three columns and their types
-  // note the UserId column is an auto incrementing column which is
-//useful if you want to pull back distinct rows
-  // easily from the table.
-   tx.executeSql( 'CREATE TABLE IF NOT EXISTS items(Id INTEGER NOT NULL PRIMARY KEY, item1 INTEGER NOT NULL, item2 INTEGER NOT NULL,item3 INTEGER NOT NULL)',
-[],nullHandler,errorHandler);
- },errorHandler,successCallBack);
-
- db.transaction(function(transaction) {
-   transaction.executeSql('SELECT * FROM items WHERE Id=1;', [],
-     function(transaction, result) {
-      if (result != null && result.rows != null) {
-      //  for (var i = 0; i < result.rows.length; i++) {
-          var row = result.rows.item(0);
-          if(row.item1 == 0){
-            $("#item1").addClass("itemClr");
-          //  document.getElementById('item1').color = red;
-          //  console.log(row.item1);
           }
           if(row.item2 == 0){
             $("#item2").addClass("itemClr");
-          //  document.getElementById('item1').color = red;
-          //  console.log(row.item1);
+
           }
           if(row.item3 == 0){
             $("#item3").addClass("itemClr");
-          //  document.getElementById('item1').color = red;
-            //console.log(row.item1);
           }
-          //$('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-          //console.log(row.item1);
-    //    }
+        }
+      },errorHandler);
+    },errorHandler,nullHandler); }
+
+    function ListDBValues() {
+
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
       }
-     },errorHandler);
- },errorHandler,nullHandler);
 
-}
+      $('#lbUsers').html('');
 
-// list the values in the database to the screen using jquery to
-//update the #lbUsers element
-function ListDBValues() {
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT * FROM User;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+            for (var i = 0; i < result.rows.length; i++) {
+              var row = result.rows.item(i);
+              $('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
+            }
+          }
+        },errorHandler);
+      },errorHandler,nullHandler);
 
- if (!window.openDatabase) {
-  alert('Databases are not supported in this browser.');
-  return;
- }
+      return;
+    }
 
-// this line clears out any content in the #lbUsers element on the
-//page so that the next few lines will show updated
-// content and not just keep repeating lines
- $('#lbUsers').html('');
+    function AddValueToDB1() {
 
-// this next section will select all the content from the User table
-//and then go through it row by row
-// appending the UserId  FirstName  LastName to the  #lbUsers element
-//on the page
- db.transaction(function(transaction) {
-   transaction.executeSql('SELECT * FROM User;', [],
-     function(transaction, result) {
-      if (result != null && result.rows != null) {
-        for (var i = 0; i < result.rows.length; i++) {
-          var row = result.rows.item(i);
-          $('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-        }
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
       }
-     },errorHandler);
- },errorHandler,nullHandler);
 
- return;
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item1= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
 
-}
-
-// this is the function that puts values into the database using the
-//values from the text boxes on the screen
-function AddValueToDB1() {
-
- if (!window.openDatabase) {
-   alert('Databases are not supported in this browser.');
-   return;
- }
-
-// this is the section that actually inserts the values into the User
-//table
- db.transaction(function(transaction) {
-   transaction.executeSql('UPDATE items SET item1= ? WHERE Id=1',[0],
-  // transaction.executeSql('INSERT INTO items(item1, item2, item3) VALUES (?,?,?)',[1,2,3],
-     nullHandler,errorHandler);
-   });
-
-   db.transaction(function(transaction) {
-     transaction.executeSql('SELECT item1 FROM items WHERE Id=1;', [],
-       function(transaction, result) {
-        if (result != null && result.rows != null) {
-        //  for (var i = 0; i < result.rows.length; i++) {
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item1 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
             var row = result.rows.item(0);
-            if(row.item1 == 0){
-              $("#item1").addClass("itemClr");
-            //  document.getElementById('item1').color = red;
-              console.log(row.item1);
+              if(row.item1 == 0){
+                $("#item1").addClass("itemClr");
+              }
             }
-            //$('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-            //console.log(row.item1);
-      //    }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+      }
+
+    function AddValueToDB2() {
+
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item2= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item2 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item2 == 0){
+                $("#item2").addClass("itemClr");
+              }
+            }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+      }
+
+    function AddValueToDB3() {
+
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item3= ? WHERE Id=1',[0],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item3 == 0){
+                $("#item3").addClass("itemClr");
+              }
+            }
+          },errorHandler);
+        },errorHandler,nullHandler);
+        return false;
+
+      }
+
+    function Clear() {
+
+      if (!window.openDatabase) {
+        alert('Databases are not supported in this browser.');
+        return;
+      }
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('UPDATE items SET item1= ?,item2= ?,item3= ? WHERE Id=1',[1,2,3],
+        nullHandler,errorHandler);
+      });
+
+      db.transaction(function(transaction) {
+        transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
+        function(transaction, result) {
+          if (result != null && result.rows != null) {
+              var row = result.rows.item(0);
+              if(row.item1 == 0){
+                $("#item1").addClass("itemClr");
+              }
+              else {
+                  $("#item1").removeClass("itemClr");
+                }
+                if(row.item2 == 0){
+                  $("#item2").addClass("itemClr");
+                }
+                else {
+                  $("#item2").removeClass("itemClr");
+                }
+                if(row.item3 == 0){
+                  $("#item3").addClass("itemClr");
+                }
+                else {
+                  $("#item3").removeClass("itemClr");
+                }
+
+              }
+            },errorHandler);
+          },errorHandler,nullHandler);
+          return false;
         }
-       },errorHandler);
-   },errorHandler,nullHandler);
-
-// this calls the function that will show what is in the User table in
-//the database
- //ListDBValues();
-
- return false;
-
-}
-function AddValueToDB2() {
-
- if (!window.openDatabase) {
-   alert('Databases are not supported in this browser.');
-   return;
- }
-
-// this is the section that actually inserts the values into the User
-//table
- db.transaction(function(transaction) {
-   transaction.executeSql('UPDATE items SET item2= ? WHERE Id=1',[0],
-  // transaction.executeSql('INSERT INTO items(item1, item2, item3) VALUES (?,?,?)',[1,2,3],
-     nullHandler,errorHandler);
-   });
-
-   db.transaction(function(transaction) {
-     transaction.executeSql('SELECT item2 FROM items WHERE Id=1;', [],
-       function(transaction, result) {
-        if (result != null && result.rows != null) {
-        //  for (var i = 0; i < result.rows.length; i++) {
-            var row = result.rows.item(0);
-            if(row.item2 == 0){
-              $("#item2").addClass("itemClr");
-            //  document.getElementById('item1').color = red;
-            //  console.log(row.item1);
-            }
-            //$('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-            //console.log(row.item1);
-      //    }
-        }
-       },errorHandler);
-   },errorHandler,nullHandler);
-
-// this calls the function that will show what is in the User table in
-//the database
- //ListDBValues();
-
- return false;
-
-}
-function AddValueToDB3() {
-
- if (!window.openDatabase) {
-   alert('Databases are not supported in this browser.');
-   return;
- }
-
-
-// this is the section that actually inserts the values into the User
-//table
- db.transaction(function(transaction) {
-   transaction.executeSql('UPDATE items SET item3= ? WHERE Id=1',[0],
-  // transaction.executeSql('INSERT INTO items(item1, item2, item3) VALUES (?,?,?)',[1,2,3],
-     nullHandler,errorHandler);
-   });
-
-   db.transaction(function(transaction) {
-     transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
-       function(transaction, result) {
-        if (result != null && result.rows != null) {
-        //  for (var i = 0; i < result.rows.length; i++) {
-            var row = result.rows.item(0);
-            if(row.item3 == 0){
-              $("#item3").addClass("itemClr");
-            //  document.getElementById('item1').color = red;
-            //  console.log(row.item1);
-            }
-            //$('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-            //console.log(row.item1);
-      //    }
-        }
-       },errorHandler);
-   },errorHandler,nullHandler);
-
-// this calls the function that will show what is in the User table in
-//the database
- //ListDBValues();
-
- return false;
-
-}
-
-function Clear() {
-
- if (!window.openDatabase) {
-   alert('Databases are not supported in this browser.');
-   return;
- }
-
-// this is the section that actually inserts the values into the User
-//table
- db.transaction(function(transaction) {
-   transaction.executeSql('UPDATE items SET item1= ?,item2= ?,item3= ? WHERE Id=1',[1,2,3],
-  // transaction.executeSql('INSERT INTO items(item1, item2, item3) VALUES (?,?,?)',[1,2,3],
-     nullHandler,errorHandler);
-   });
-
-   db.transaction(function(transaction) {
-     transaction.executeSql('SELECT item3 FROM items WHERE Id=1;', [],
-       function(transaction, result) {
-        if (result != null && result.rows != null) {
-        //  for (var i = 0; i < result.rows.length; i++) {
-            var row = result.rows.item(0);
-            if(row.item1 == 0){
-              $("#item1").addClass("itemClr");
-            }
-            else {
-                $("#item1").removeClass("itemClr");
-            }
-            if(row.item2 == 0){
-              $("#item2").addClass("itemClr");
-            }
-            else {
-                $("#item2").removeClass("itemClr");
-            }
-            if(row.item3 == 0){
-              $("#item3").addClass("itemClr");
-            }
-            else {
-                $("#item3").removeClass("itemClr");
-            }
-            //$('#lbUsers').append('<br>' + row.UserId + '. ' +row.FirstName+ ' ' + row.LastName);
-            //console.log(row.item1);
-      //    }
-        }
-       },errorHandler);
-   },errorHandler,nullHandler);
-
-// this calls the function that will show what is in the User table in
-//the database
- //ListDBValues();
-
- return false;
-
-}
 
 </script>
 
   </head>
   <body onload="onBodyLoad();">
-<div class="app">
+    <div class="app">
     <div id="myApp">
       <div class="panel panel-left panel-cover">
         <div class="block">
-
         </div>
       </div>
     <div class="views">
@@ -337,23 +236,16 @@ function Clear() {
               <div class="padding-left">HappyME:)</div>
             </div>
           </div>-->
-
           <div class="page-content">
             <div style="padding-top:60px;">
               <div class="col-100" style="overflow: auto;">
-
-              <div style="width:100%; text-align:center;"  id="item1" onclick="AddValueToDB1()"><i class="material-icons" style="font-size:150px;">weekend</i></div>
-
+              <div style="width:100%; text-align:center;"  id="item1" onclick="AddValueToDB1()"><i class="material-icons" style="font-size:150px;">&#xe16b;</i></div>
           </div>
             <div class="col-100">
-
-              <div style="width:100%; text-align:center;" id="item2" onclick="AddValueToDB2()"><i class="material-icons" style="font-size:150px;">restaurant</i></div>
-
+              <div style="width:100%; text-align:center;" id="item2" onclick="AddValueToDB2()"><i class="material-icons" style="font-size:150px;">&#xe56c;</i></div>
           </div>
           <div class="col-100">
-
-              <div style="width:100%; text-align:center;" id="item3" onclick="AddValueToDB3()"><i class="material-icons" style="font-size:150px;">pool</i></div>
-
+              <div style="width:100%; text-align:center;" id="item3" onclick="AddValueToDB3()"><i class="material-icons" style="font-size:150px;">&#xeb48;</i></div>
           </div>
           </div>
           <div class="text-align-center padding-top" onclick="Clear()">CLEAR</div>
@@ -369,7 +261,7 @@ function Clear() {
       </div>
     </div>
     </div>
-  </div>
+    </div>
     <script type="text/javascript" src="js/framework7.js"></script>
     <script type="text/javascript" src="js/my-app.js"></script>
     <script type="text/javascript">
